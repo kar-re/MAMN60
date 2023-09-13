@@ -433,8 +433,26 @@ class HelloArRenderer(val activity: HelloArActivity) :
 
         // You can also check which image this is based on AugmentedImage.getName().
         when (img.index) {
-          dogIndex -> TODO("Render a 3D version of a dog at img.getCenterPose()")
-          catIndex -> TODO("Render a 3D version of a cat at img.getCenterPose()")
+          0 -> {
+              val pose = img.getCenterPose()
+              // Get the current pose of an Anchor in world space. The Anchor pose is updated
+              // during calls to session.update() as ARCore refines its estimate of the world.
+              pose.toMatrix(modelMatrix, 0)
+
+              // Calculate model/view/projection matrices
+              Matrix.multiplyMM(modelViewMatrix, 0, viewMatrix, 0, modelMatrix, 0)
+              Matrix.multiplyMM(modelViewProjectionMatrix, 0, projectionMatrix, 0, modelViewMatrix, 0)
+
+              // Update shader properties and draw
+              virtualObjectShader.setMat4("u_ModelView", modelViewMatrix)
+              virtualObjectShader.setMat4("u_ModelViewProjection", modelViewProjectionMatrix)
+              val texture = virtualObjectAlbedoTexture
+
+              virtualObjectShader.setTexture("u_AlbedoTexture", texture)
+
+              render.draw(virtualObjectMesh, virtualObjectShader, virtualSceneFramebuffer)
+
+          } // Image tracking stuff
         }
       }
     }
