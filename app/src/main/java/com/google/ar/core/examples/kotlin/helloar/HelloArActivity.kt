@@ -104,8 +104,8 @@ class HelloArActivity : AppCompatActivity() {
     // Configure the session, using Lighting Estimation, and Depth mode.
     fun configureSession(session: Session) {
         val imageDatabase = AugmentedImageDatabase(session)
-        val bitmap = assets.open("dog.jpg").use { BitmapFactory.decodeStream(it) }
-        val imageWidthInMeters = 0.10f // 10 cm
+        val bitmap = assets.open("marker.jpg").use { BitmapFactory.decodeStream(it) }
+        val imageWidthInMeters = 0.06f // 6 cm
         val dogIndex = imageDatabase.addImage("dog", bitmap, imageWidthInMeters)
 
         session.configure(
@@ -129,6 +129,9 @@ class HelloArActivity : AppCompatActivity() {
                             }
                     // Adding image database
                     augmentedImageDatabase = imageDatabase
+
+                    // Set autofocus for small trackables
+                    focusMode = Config.FocusMode.AUTO
                 }
         )
     }
