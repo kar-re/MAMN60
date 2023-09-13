@@ -21,6 +21,7 @@ import android.util.Log
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.google.ar.core.Anchor
+import com.google.ar.core.AugmentedImage
 import com.google.ar.core.Camera
 import com.google.ar.core.DepthPoint
 import com.google.ar.core.Frame
@@ -411,6 +412,32 @@ class HelloArRenderer(val activity: HelloArActivity) :
 
     // Compose the virtual scene with the background.
     backgroundRenderer.drawVirtualScene(render, virtualSceneFramebuffer, Z_NEAR, Z_FAR)
+
+    val updatedAugmentedImages = frame.getUpdatedTrackables(AugmentedImage::class.java)
+
+    for (img in updatedAugmentedImages) {
+      if (img.trackingState == TrackingState.TRACKING) {
+        // Use getTrackingMethod() to determine whether the image is currently
+        // being tracked by the camera.
+        when (img.trackingMethod) {
+          AugmentedImage.TrackingMethod.LAST_KNOWN_POSE -> {
+            // The planar target is currently being tracked based on its last known pose.
+          }
+          AugmentedImage.TrackingMethod.FULL_TRACKING -> {
+            // The planar target is being tracked using the current camera image.
+          }
+          AugmentedImage.TrackingMethod.NOT_TRACKING -> {
+            // The planar target isn't been tracked.
+          }
+        }
+
+        // You can also check which image this is based on AugmentedImage.getName().
+        when (img.index) {
+          dogIndex -> TODO("Render a 3D version of a dog at img.getCenterPose()")
+          catIndex -> TODO("Render a 3D version of a cat at img.getCenterPose()")
+        }
+      }
+    }
   }
 
   /** Checks if we detected at least one plane. */
